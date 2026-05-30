@@ -8,7 +8,9 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from PIL import Image
 from scipy.stats import poisson
 
-API_KEY = "63ab160447f340efbade4fbf8ac3a4c1"
+import streamlit as st
+
+API_KEY = st.secrets["API_KEY"]
 
 BASE_URL = "https://api.football-data.org/v4"
 COMPETITION = "BSA"  # Brasileirão Série A
