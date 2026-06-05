@@ -254,8 +254,8 @@ def plot_heatmap(matrix, home_team, away_team, home_win, draw, away_win):
     ax.invert_yaxis()
     ax.set_facecolor("#0f1419")
 
-    ax.set_xlabel(f"Gols do {away_team}", color="white", fontsize=10)
-    ax.set_ylabel(f"Gols do {home_team}", color="white", fontsize=10)
+    ax.set_xlabel(f"{away_team}", color="white", fontsize=7)
+    ax.set_ylabel(f"{home_team}", color="white", fontsize=7)
 
     ax.tick_params(colors="white", labelsize=8)
 
