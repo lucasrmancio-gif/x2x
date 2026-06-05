@@ -261,7 +261,7 @@ def plot_heatmap(matrix, home_team, away_team, home_win, draw, away_win):
 
     for text in ax.texts:
         text.set_color("white")
-        text.set_fontsize(6)
+        text.set_fontsize(4)
         text.set_fontweight("bold")
 
         text.set_path_effects([
