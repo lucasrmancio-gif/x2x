@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.patheffects as path_effects
 
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
-from PIL import Image
 from scipy.stats import poisson
 
 import streamlit as st
@@ -17,29 +15,6 @@ COMPETITION = "BSA"  # Brasileirão Série A
 
 HOME_ADVANTAGE = 1.10
 DIXON_COLES_RHO = 0.10
-
-TEAM_LOGOS = {
-    "Cruzeiro EC": "logos/Cruzeiro.png",
-    "CR Flamengo": "logos/Flamengo.png",
-    "SE Palmeiras": "logos/Palmeiras.png",
-    "São Paulo FC": "logos/São Paulo.png",
-    "Santos FC": "logos/Santos.png",
-    "SC Corinthians Paulista": "logos/Corinthians.png",
-    "Grêmio FBPA": "logos/Grêmio.png",
-    "SC Internacional": "logos/Internacional.png",
-    "Atlético Mineiro": "logos/Atlético Mineiro.png",
-    "Botafogo FR": "logos/Botafogo.png",
-    "Fluminense FC": "logos/Fluminense.png",
-    "CR Vasco da Gama": "logos/Vasco da Gama.png",
-    "EC Bahia": "logos/Bahia.png",
-    "Athletico Paranaense": "logos/Athletico Paranaense.png",
-    "Coritiba FBC": "logos/Coritiba.png",
-    "Chapecoense AF": "logos/Chapecoense.png",
-    "EC Vitória": "logos/Vitória.png",
-    "Clube do Remo": "logos/Remo.png",
-    "Red Bull Bragantino": "logos/Red Bull Bragantino.png"
-}
-
 
 def get_headers():
     return {"X-Auth-Token": API_KEY}
@@ -250,30 +225,6 @@ def calculate_markets(matrix):
     return both_teams_score * 100, over_25 * 100, under_25 * 100
 
 
-def add_team_logo(ax, logo_path, xy, zoom=0.12, rotation=0):
-
-    img = Image.open(logo_path).convert("RGBA")
-
-    # rotaciona a imagem
-    if rotation != 0:
-        img = img.rotate(
-            rotation,
-            expand=True,
-            resample=Image.Resampling.BICUBIC
-            )
-
-    imagebox = OffsetImage(img, zoom=zoom, interpolation="hanning")
-
-    ab = AnnotationBbox(
-        imagebox,
-        xy,
-        frameon=False,
-        xycoords='axes fraction'
-    )
-
-    ax.add_artist(ab)
-
-
 def plot_heatmap(matrix, home_team, away_team, home_win, draw, away_win):
 
     matrix_percent = matrix * 100
@@ -300,8 +251,11 @@ def plot_heatmap(matrix, home_team, away_team, home_win, draw, away_win):
         linecolor="#0f1419",
         square=True
     )
-
+    ax.invert_yaxis()
     ax.set_facecolor("#0f1419")
+
+    ax.set_xlabel(f"Gols do {away_team}", color="white", fontsize=10)
+    ax.set_ylabel(f"Gols do {home_team}", color="white", fontsize=10)
 
     ax.tick_params(colors="white", labelsize=8)
 
@@ -316,28 +270,6 @@ def plot_heatmap(matrix, home_team, away_team, home_win, draw, away_win):
         ])
 
     plt.tight_layout(rect=[0, 0.06, 1, 1])
-    home_logo = TEAM_LOGOS.get(home_team)
-    away_logo = TEAM_LOGOS.get(away_team)
-
-    # Logo do mandante
-    if home_logo:
-        add_team_logo(
-            ax,
-            home_logo,
-            (-0.075, 0.50),
-            zoom=0.018
-        )
-
-    # Logo do visitante
-    if away_logo:
-        add_team_logo(
-            ax,
-            away_logo,
-            (0.50, -0.055),
-            zoom=0.018
-        )
-    return plt.gcf()
-
 
 if __name__ == "__main__":
 
