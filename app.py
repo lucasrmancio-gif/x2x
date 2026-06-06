@@ -201,4 +201,4 @@ if st.button("Gerar análise"):
     col_left, col_center, col_right = st.columns([1, 2, 1])
 
     with col_center:
-        st.pyplot(fig, use_container_width=True)
+        st.pyplot(fig, width="stretch")

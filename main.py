@@ -46,6 +46,57 @@ def get_team_id(nome_time):
 
     raise ValueError(f"Time não encontrado: {nome_time}")
 
+def get_team_strengths():
+    matches = get_matches()
+
+    table = {}
+
+    for match in matches:
+        if match["status"] != "FINISHED":
+            continue
+
+        home = match["homeTeam"]
+        away = match["awayTeam"]
+
+        home_id = home["id"]
+        away_id = away["id"]
+
+        home_goals = match["score"]["fullTime"]["home"]
+        away_goals = match["score"]["fullTime"]["away"]
+
+        for team in [home, away]:
+            team_id = team["id"]
+
+            if team_id not in table:
+                table[team_id] = {
+                    "name": team["name"],
+                    "points": 0,
+                    "games": 0
+                }
+
+        table[home_id]["games"] += 1
+        table[away_id]["games"] += 1
+
+        if home_goals > away_goals:
+            table[home_id]["points"] += 3
+        elif home_goals < away_goals:
+            table[away_id]["points"] += 3
+        else:
+            table[home_id]["points"] += 1
+            table[away_id]["points"] += 1
+
+    strengths = {}
+
+    for team_id, data in table.items():
+        if data["games"] == 0:
+            strengths[team_id] = 1
+        else:
+            ppg = data["points"] / data["games"]
+
+            # Normalização simples
+            strengths[team_id] = ppg / 1.5
+
+    return strengths
 
 def get_last_matches_stats(nome_time, last=10, mode="all"):
     team_id, team_name = get_team_id(nome_time)
@@ -79,12 +130,15 @@ def get_last_matches_stats(nome_time, last=10, mode="all"):
 
     last_matches = finished_matches[-last:]
 
+    strengths = get_team_strengths()
+
     gols_feitos = 0
     gols_sofridos = 0
     peso_total = 0
 
     for index, match in enumerate(last_matches):
-        weight = 1 + (index / len(last_matches))
+
+        recent_weight = 1 + (index / len(last_matches))
 
         home = match["homeTeam"]
         away = match["awayTeam"]
@@ -93,19 +147,43 @@ def get_last_matches_stats(nome_time, last=10, mode="all"):
         away_goals = match["score"]["fullTime"]["away"]
 
         if home["id"] == team_id:
-            gols_feitos += home_goals * weight
-            gols_sofridos += away_goals * weight
-        else:
-            gols_feitos += away_goals * weight
-            gols_sofridos += home_goals * weight
+            opponent_id = away["id"]
 
-        peso_total += weight
+            gols_marcados = home_goals
+            gols_concedidos = away_goals
+
+        else:
+            opponent_id = home["id"]
+
+            gols_marcados = away_goals
+            gols_concedidos = home_goals
+
+        opponent_strength = strengths.get(opponent_id, 1)
+
+        # evita exageros
+        opponent_strength = max(
+            0.75,
+            min(opponent_strength, 1.25)
+        )
+
+        final_weight = (
+            recent_weight *
+            opponent_strength
+        )
+
+        gols_feitos += gols_marcados * final_weight
+        gols_sofridos += gols_concedidos * final_weight
+
+        peso_total += final_weight
+
+    media_gols_feitos = gols_feitos / peso_total
+    media_gols_sofridos = gols_sofridos / peso_total
 
     return (
         team_id,
         team_name,
-        gols_feitos / peso_total,
-        gols_sofridos / peso_total
+        media_gols_feitos,
+        media_gols_sofridos
     )
 
 
