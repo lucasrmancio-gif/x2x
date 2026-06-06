@@ -257,7 +257,7 @@ def plot_heatmap(matrix, home_team, away_team, home_win, draw, away_win):
     ax.set_xlabel(f"{away_team}", color="white", fontsize=5)
     ax.set_ylabel(f"{home_team}", color="white", fontsize=5)
 
-    ax.tick_params(colors="white", labelsize=3)
+    ax.tick_params(colors="white", labelsize=1)
 
     for text in ax.texts:
         text.set_color("white")
