@@ -349,6 +349,9 @@ def plot_heatmap(matrix, home_team, away_team, home_win, draw, away_win):
 
     plt.tight_layout(rect=[0, 0.06, 1, 1])
 
+    return plt.gcf()
+
+
 if __name__ == "__main__":
 
     home_team = "Cruzeiro"
