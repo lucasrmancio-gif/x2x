@@ -18,7 +18,11 @@ TEAMS = [
     "Bahia",
     "Athletico Paranaense",
     "Bragantino",
-    "Vitória"
+    "Vitória",
+    "Coritiba",
+    "Remo",
+    "Chapecoense",
+    "Mirassol"
 ]
 
 
